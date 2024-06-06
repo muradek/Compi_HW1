@@ -1,4 +1,5 @@
 *txt
+lex.yy.c
 
 # Prerequisites
 *.d
