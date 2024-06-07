@@ -38,12 +38,27 @@ const char* getTokenType(int token_num)
   return "Failed";
 }
 
+void printRequestedLine(int token_num)
+{
+  const char* token_type = getTokenType(token_num);
+  switch(token_num)
+	{
+		case COMMENT: 
+      std::cout << yylineno << " " << token_type << " //" << std::endl;
+      break;
+
+    default:
+      std::cout << yylineno << " " << token_type << " " << yytext << std::endl;
+      break;
+  }
+}
+
 int main()
 {
 	int token;
 	while(token = yylex()) 
 	{
-		std::cout << yylineno << " " << getTokenType(token) << " " << yytext << std::endl;
+		printRequestedLine(token);
 	}
 	return 0;
 }

@@ -3,11 +3,12 @@
 #include "tokens.hpp"
 
 %}
-
+%option yylineno
 %option noyywrap
 digit ([0-9])
 
 %%
+\n
 int return INT;
 byte return BYTE;
 b return B;
