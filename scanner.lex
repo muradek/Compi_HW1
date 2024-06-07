@@ -30,21 +30,23 @@ continue return CONTINUE;
 \{ return LBRACE;
 \} return RBRACE;
 = return ASSIGN;
+
 == return RELOP;
 != return RELOP;
 \< return RELOP;
 > return RELOP;
-
-\/\/.* return COMMENT;
-
 \<= return RELOP;
 >= return RELOP;
+
 \+ return BINOP;
 \- return BINOP;
 \* return BINOP;
 \/ return BINOP;
 
+\/\/.* return COMMENT;
+[a-zA-Z]+[1-9a-zA-Z]*  return ID;
+[1-9]+[0-9]*    return NUM;
+"[^\"]*"    return STRING;
 
-
-.   printf("unrecognized");
+.   printf("unrecognized\n");
 %%
