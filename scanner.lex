@@ -33,12 +33,16 @@ continue return CONTINUE;
 != return RELOP;
 \< return RELOP;
 > return RELOP;
+
+\/\/.* return COMMENT;
+
 \<= return RELOP;
 >= return RELOP;
 \+ return BINOP;
 \- return BINOP;
 \* return BINOP;
 \/ return BINOP;
+
 
 
 .   printf("unrecognized");
