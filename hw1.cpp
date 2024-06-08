@@ -1,5 +1,7 @@
 #include "tokens.hpp"
 #include <iostream>
+#include <string.h>
+#include <string>
 
 extern struct loc_t {int from; int to; } yyloc;
 
@@ -38,6 +40,14 @@ const char* getTokenType(int token_num)
   return "Failed";
 }
 
+
+
+const char* getString(const char* src_str)
+{
+  const char* subStr = strndup(src_str + 1, strlen(src_str)-2); //removing the "" 
+  return subStr;
+}
+
 void printRequestedLine(int token_num)
 {
   const char* token_type = getTokenType(token_num);
@@ -45,6 +55,18 @@ void printRequestedLine(int token_num)
 	{
 		case COMMENT: 
       std::cout << yylineno << " " << token_type << " //" << std::endl;
+      break;
+
+    case STRING:
+      if (strlen(yytext)==2) //empty string ""
+      {
+        std::cout << yylineno << " " << token_type << std::endl;
+      }
+      else
+      {
+        const char* subStr = getString(yytext); //remove ""
+        std::cout << yylineno << " " << token_type << " " << subStr << std::endl;
+      }
       break;
 
     default:
@@ -58,6 +80,11 @@ int main()
 	int token;
 	while(token = yylex()) 
 	{
+    if (token == -1)
+    {
+      std::cout << "Error " << yytext << std::endl;
+      exit(0);
+    }
 		printRequestedLine(token);
 	}
 	return 0;

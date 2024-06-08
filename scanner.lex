@@ -44,9 +44,11 @@ continue return CONTINUE;
 \/ return BINOP;
 
 \/\/.* return COMMENT;
-[a-zA-Z]+[1-9a-zA-Z]*  return ID;
-[1-9]+[0-9]*    return NUM;
-"[^\"]*"    return STRING;
+[a-zA-Z]+[0-9a-zA-Z]*  return ID;
+0|([1-9]+[0-9]*)    return NUM;
+"\\n"    return -1;
+"\\r"    return -1;
+\"[^\\\"]*\"    return STRING;
 
-.   printf("unrecognized\n");
+.   return -1;
 %%

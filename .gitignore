@@ -1,6 +1,7 @@
 *txt
 lex.yy.c
 *in
+try*
 
 # Prerequisites
 *.d
