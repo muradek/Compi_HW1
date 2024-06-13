@@ -36,6 +36,7 @@ const char* getTokenType(int token_num)
 		case ID: return "ID";
     case NUM: return "NUM";
     case STRING: return "STRING";
+    case FORBIDDEN_STR: return "FORBIDDEN_STR";
 	}
   return "Failed";
 }
@@ -57,6 +58,10 @@ void printRequestedLine(int token_num)
       std::cout << yylineno << " " << token_type << " //" << std::endl;
       break;
 
+    case FORBIDDEN_STR:
+      std::cout << "wohooooo " << yytext << std::endl;
+      break;
+
     case STRING:
       if (strlen(yytext)==2) //empty string ""
       {
@@ -64,7 +69,7 @@ void printRequestedLine(int token_num)
       }
       else
       {
-        const char* subStr = getString(yytext); //remove ""
+        const char* subStr = getString(yytext); //remove "" maybe cancel this function..
         std::cout << yylineno << " " << token_type << " " << subStr << std::endl;
       }
       break;

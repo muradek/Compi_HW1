@@ -46,9 +46,10 @@ continue return CONTINUE;
 \/\/.* return COMMENT;
 [a-zA-Z]+[0-9a-zA-Z]*  return ID;
 0|([1-9]+[0-9]*)    return NUM;
-"\\n"    return -1;
-"\\r"    return -1;
-\"[^\\\"]*\"    return STRING;
+\"\\n\"    return FORBIDDEN_STR;
+\"\\r\"    return FORBIDDEN_STR;
+\"[^\\\"]*((\\n)|(\\r)|(\\t)|(\\0))*\"    return STRING;
+
 
 .   return -1;
 %%
