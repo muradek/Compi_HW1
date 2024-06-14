@@ -39,6 +39,7 @@ const char* getTokenType(int token_num)
     case NUM: return "NUM";
     case STRING: return "STRING";
     case FORBIDDEN_STR: return "FORBIDDEN_STR";
+    case UNCLOSED_STRING: return "UNCLOSED_STRING";
 	}
   return "Failed";
 }
@@ -59,6 +60,7 @@ void handleString(const char* token_type)
   else
   {
     std::string subStr = strndup(yytext + 1, strlen(yytext)-2); //removing the ""
+
     // updating escape sequences to relevent represantaion
     vector<string> old_patterns{"\\n", "\\r", "\\t", "\\0", "\\\\","\\\""};
     vector<string> new_patterns{"\n", "\r", "\t", "\0", "\\","\""}; // need to check \t \r \0..
@@ -79,14 +81,16 @@ void handleString(const char* token_type)
     }
 
     // converting hex representations to hascii
-    // string old_hex = "\\x";
-    // string new_hex = "\x";
-    // size_t hex_pos = subStr.find(old_hex);
-    // while (hex_pos != std::string::npos) 
-    // {
-    //   subStr.replace(hex_pos, old_hex.size(), new_hex); 
-    //   pos = subStr.find(old_hex, pos + new_hex.size()); //start looking from the last replacement position
-    // }
+    size_t old_loc = subStr.find("\\x"); // find begining of hex rep
+    while (old_loc != std::string::npos)
+    {
+      // cout << "entered loop. old loc = " << old_loc << endl;
+      string hex_str = subStr.substr(old_loc+2, 2); // find the hex value
+      unsigned long ascii_code = stoul(hex_str, nullptr, 16); // convert from hex to ascii code
+      string ascii_str(1, ascii_code); // convert from ascii code to str
+      subStr.replace(old_loc, 4, ascii_str); 
+      old_loc = subStr.find("\\x");
+    }
 
     std::cout << yylineno << " " << token_type << " " << subStr << std::endl;
   }
@@ -108,6 +112,9 @@ void printRequestedLine(int token_num)
     case STRING:
       handleString(token_type);
       break;
+    case UNCLOSED_STRING:
+      cout << "Error unclosed string" << endl;
+      exit(0);
 
     default:
       std::cout << yylineno << " " << token_type << " " << yytext << std::endl;

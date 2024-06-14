@@ -48,7 +48,8 @@ continue return CONTINUE;
 0|([1-9]+[0-9]*)    return NUM;
 \"\\n\"    return FORBIDDEN_STR;
 \"\\r\"    return FORBIDDEN_STR;
-\"([^\\\"\x00-\x08\x0B-\x0C\x0F-\x1F]*{legal_escape}*)*\"    return STRING;
+TODO   return UNCLOSED_STRING;
+\"([^\\\"\\x00-\\x08\\x0B-\\x0C\\x0F-\\x1F]*{legal_escape}*)*\"    return STRING;
 
 
 .   return -1;
