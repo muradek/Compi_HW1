@@ -86,7 +86,28 @@ void handleString(const char* token_type)
     {
       // cout << "entered loop. old loc = " << old_loc << endl;
       string hex_str = subStr.substr(old_loc+2, 2); // find the hex value
-      unsigned long ascii_code = stoul(hex_str, nullptr, 16); // convert from hex to ascii code
+      char c0 = hex_str[0];
+      char c1 = hex_str[1];
+      unsigned long ascii_code = 0;
+      bool legal_hex = 0;
+      if((isdigit(c0)) || (isalpha(c0) && (toupper(c0) >= 'A' && toupper(c0) <= 'F')))
+      {
+        if((isdigit(c1)) || (isalpha(c1) && (toupper(c1) >= 'A' && toupper(c1) <= 'F')))
+        {
+          ascii_code = stoul(hex_str, nullptr, 16); // convert from hex to ascii code
+          if (ascii_code <= 127)
+          {
+            legal_hex = 1;
+          }
+        }
+      }
+
+      if (not legal_hex)
+      {
+        cout << "Error undefined escape sequence x" << hex_str << endl;
+        exit(0);
+      }
+
       string ascii_str(1, ascii_code); // convert from ascii code to str
       subStr.replace(old_loc, 4, ascii_str); 
       old_loc = subStr.find("\\x");

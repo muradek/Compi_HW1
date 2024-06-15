@@ -5,7 +5,7 @@
 %}
 %option yylineno
 %option noyywrap
-legal_escape ((\\\\)|(\\\")|(\\n)|(\\r)|(\\t)|(\\0)|(\\x[0-9A-Fa-f][0-9A-Fa-f]))
+legal_escape ((\\\\)|(\\\")|(\\n)|(\\r)|(\\t)|(\\0)|(\\x[0-9A-Za-z][0-9A-Za-z]))
 
 %%
 \n
@@ -48,8 +48,8 @@ continue return CONTINUE;
 0|([1-9]+[0-9]*)    return NUM;
 \"\\n\"    return FORBIDDEN_STR;
 \"\\r\"    return FORBIDDEN_STR;
-TODO   return UNCLOSED_STRING;
-\"([^\\\"\\x00-\\x08\\x0B-\\x0C\\x0F-\\x1F]*{legal_escape}*)*\"    return STRING;
+\"([^\\\"(\x00-\x08)(\x0B-\x0C)(\x0F-\x1F)(\n)]*{legal_escape}*)*    return UNCLOSED_STRING;
+\"([^\\\"(\x00-\x08)(\x0B-\x0C)(\x0F-\x1F)(\n)]*{legal_escape}*)*\"    return STRING;
 
 
 .   return -1;
