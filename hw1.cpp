@@ -44,12 +44,65 @@ const char* getTokenType(int token_num)
   return "Failed";
 }
 
-// inserted the function inline
-// const char* getString(const char* src_str)
-// {
-//   const char* subStr = strndup(src_str + 1, strlen(src_str)-2); //removing the "" 
-//   return subStr;
-// }
+string matchEscapeSeq(string subStr)
+{
+  // updating escape sequences to relevent represantaion
+  vector<string> old_patterns{"\\n", "\\r", "\\t", "\\0", "\\\\","\\\""};
+  vector<string> new_patterns{"\n", "\r", "\t", "\0", "\\","\""}; // need to check \t \r \0..
+  vector<string>::iterator new_it = new_patterns.begin();
+
+  for (vector<string>::iterator old_it=old_patterns.begin(); old_it!=old_patterns.end(); ++old_it) 
+  {
+    std::string replace_word = *old_it;
+    std::string replace_by = *new_it; // replace_word.substr(1, replace_word.size());
+    size_t pos = subStr.find(replace_word);
+    while (pos != std::string::npos) 
+    {
+      // cout << "enterd while loop, replace word is: " << replace_word << ". replace by is: " << replace_by<< endl;
+      subStr.replace(pos, replace_word.size(), replace_by); 
+      pos = subStr.find(replace_word, pos + replace_by.size()); //start looking from the last replacement position
+    }
+    ++new_it;
+  }
+  return subStr;
+}
+
+string matchHexSeq(string subStr)
+{
+  // converting hex representations to hascii
+  size_t old_loc = subStr.find("\\x"); // find begining of hex rep
+  while (old_loc != std::string::npos)
+  {
+    // cout << "entered loop. old loc = " << old_loc << endl;
+    string hex_str = subStr.substr(old_loc+2, 2); // find the hex value
+    char c0 = hex_str[0];
+    char c1 = hex_str[1];
+    unsigned long ascii_code = 0;
+    bool legal_hex = 0;
+    if((isdigit(c0)) || (isalpha(c0) && (toupper(c0) >= 'A' && toupper(c0) <= 'F')))
+    {
+      if((isdigit(c1)) || (isalpha(c1) && (toupper(c1) >= 'A' && toupper(c1) <= 'F')))
+      {
+        ascii_code = stoul(hex_str, nullptr, 16); // convert from hex to ascii code
+        if (ascii_code <= 127)
+        {
+          legal_hex = 1;
+        }
+      }
+    }
+
+    if (not legal_hex)
+    {
+      cout << "Error undefined escape sequence x" << hex_str << endl;
+      exit(0);
+    }
+
+    string ascii_str(1, ascii_code); // convert from ascii code to str
+    subStr.replace(old_loc, 4, ascii_str); 
+    old_loc = subStr.find("\\x");
+  }
+  return subStr;
+}
 
 void handleString(const char* token_type)
 {
@@ -59,59 +112,9 @@ void handleString(const char* token_type)
   }
   else
   {
-    std::string subStr = strndup(yytext + 1, strlen(yytext)-2); //removing the ""
-
-    // updating escape sequences to relevent represantaion
-    vector<string> old_patterns{"\\n", "\\r", "\\t", "\\0", "\\\\","\\\""};
-    vector<string> new_patterns{"\n", "\r", "\t", "\0", "\\","\""}; // need to check \t \r \0..
-    vector<string>::iterator new_it = new_patterns.begin();
-
-    for (vector<string>::iterator old_it=old_patterns.begin(); old_it!=old_patterns.end(); ++old_it) 
-    {
-      std::string replace_word = *old_it;
-      std::string replace_by = *new_it; // replace_word.substr(1, replace_word.size());
-      size_t pos = subStr.find(replace_word);
-      while (pos != std::string::npos) 
-      {
-        // cout << "enterd while loop, replace word is: " << replace_word << ". replace by is: " << replace_by<< endl;
-        subStr.replace(pos, replace_word.size(), replace_by); 
-        pos = subStr.find(replace_word, pos + replace_by.size()); //start looking from the last replacement position
-      }
-      ++new_it;
-    }
-
-    // converting hex representations to hascii
-    size_t old_loc = subStr.find("\\x"); // find begining of hex rep
-    while (old_loc != std::string::npos)
-    {
-      // cout << "entered loop. old loc = " << old_loc << endl;
-      string hex_str = subStr.substr(old_loc+2, 2); // find the hex value
-      char c0 = hex_str[0];
-      char c1 = hex_str[1];
-      unsigned long ascii_code = 0;
-      bool legal_hex = 0;
-      if((isdigit(c0)) || (isalpha(c0) && (toupper(c0) >= 'A' && toupper(c0) <= 'F')))
-      {
-        if((isdigit(c1)) || (isalpha(c1) && (toupper(c1) >= 'A' && toupper(c1) <= 'F')))
-        {
-          ascii_code = stoul(hex_str, nullptr, 16); // convert from hex to ascii code
-          if (ascii_code <= 127)
-          {
-            legal_hex = 1;
-          }
-        }
-      }
-
-      if (not legal_hex)
-      {
-        cout << "Error undefined escape sequence x" << hex_str << endl;
-        exit(0);
-      }
-
-      string ascii_str(1, ascii_code); // convert from ascii code to str
-      subStr.replace(old_loc, 4, ascii_str); 
-      old_loc = subStr.find("\\x");
-    }
+    std::string subStr = strndup(yytext + 1, strlen(yytext)-2); //remove the ""
+    subStr = matchEscapeSeq(subStr);
+    subStr = matchHexSeq(subStr);
 
     std::cout << yylineno << " " << token_type << " " << subStr << std::endl;
   }
@@ -127,7 +130,7 @@ void printRequestedLine(int token_num)
       break;
 
     case FORBIDDEN_STR:
-      std::cout << "wohooooo " << yytext << std::endl;
+      std::cout << "wohooooo needs UPDATE! " << yytext << std::endl;
       break;
 
     case STRING:
