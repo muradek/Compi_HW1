@@ -60,11 +60,29 @@ void checkLegalEscape(string subStr)
   }
 }
 
+string trimNullTerminator(string subStr)
+{
+  size_t pos = subStr.find("\\0");
+  if (pos != string::npos)
+  {
+    subStr = subStr.substr(0, pos);
+  }
+
+  pos = subStr.find("\\x00");
+  if (pos != string::npos)
+  {
+    subStr = subStr.substr(0, pos);
+  }
+  
+  return subStr;
+}
+
+
 string matchEscapeSeq(string subStr)
 {
   // updating escape sequences to relevent represantaion
-  vector<string> old_patterns{"\\n", "\\r", "\\t", "\\0", "\\\\","\\\""};
-  vector<string> new_patterns{"\n", "\r", "\t", "\0", "\\","\""}; // need to check \t \r \0..
+  vector<string> old_patterns{"\\n", "\\r", "\\t", "\\\\","\\\""};
+  vector<string> new_patterns{"\n", "\r", "\t", "\\","\""}; // need to check \t \r \0..
   vector<string>::iterator new_it = new_patterns.begin();
 
   for (vector<string>::iterator old_it=old_patterns.begin(); old_it!=old_patterns.end(); ++old_it) 
@@ -131,6 +149,7 @@ void handleString(const char* token_type)
   {
     std::string subStr = strndup(yytext + 1, strlen(yytext)-2); //remove the ""
     checkLegalEscape(subStr);
+    subStr = trimNullTerminator(subStr);
     subStr = matchEscapeSeq(subStr);
     subStr = matchHexSeq(subStr);
 
