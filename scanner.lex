@@ -8,7 +8,6 @@
 legal_escape (\\.+)
 
 %%
-\n
 int return INT;
 byte return BYTE;
 b return B;
@@ -51,5 +50,6 @@ continue return CONTINUE;
 \"([^\\\"(\x00-\x08)(\x0B-\x0C)(\x0F-\x1F)(\n)]*{legal_escape}*)*\"    return STRING;
 \"([^\\\"(\x00-\x08)(\x0B-\x0C)(\x0F-\x1F)(\n)]*{legal_escape}*)*    return UNCLOSED_STRING;
 
+[ \t\r\n]+  ;
 .   return -1;
 %%
