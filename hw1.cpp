@@ -44,6 +44,22 @@ const char* getTokenType(int token_num)
   return "Failed";
 }
 
+void checkLegalEscape(string subStr)
+{
+  size_t pos = subStr.find("\\");
+  while (pos != std::string::npos) 
+  {
+    // cout << "entere while loop. pos= " << pos;
+    char c = subStr[pos+1]; //maybe +2?
+    if ((c != '\\') && (c != '\"') && (c != 'n') && (c != 'r') && (c != 't') && (c != '0') && (c != 'x'))
+    {
+      cout << "Error undefined escape sequence " << c << endl;
+      exit(0);
+    }
+    pos = subStr.find("\\", pos+2); //start looking from the last replacement position
+  }
+}
+
 string matchEscapeSeq(string subStr)
 {
   // updating escape sequences to relevent represantaion
@@ -104,6 +120,7 @@ string matchHexSeq(string subStr)
   return subStr;
 }
 
+
 void handleString(const char* token_type)
 {
   if (strlen(yytext)==2) //empty string ""
@@ -113,6 +130,7 @@ void handleString(const char* token_type)
   else
   {
     std::string subStr = strndup(yytext + 1, strlen(yytext)-2); //remove the ""
+    checkLegalEscape(subStr);
     subStr = matchEscapeSeq(subStr);
     subStr = matchHexSeq(subStr);
 
