@@ -2,6 +2,10 @@
 lex.yy.c
 *in
 try*
+/tests
+*zip
+*.sh
+.DS_Store
 
 # Prerequisites
 *.d
