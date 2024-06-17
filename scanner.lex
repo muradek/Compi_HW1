@@ -45,8 +45,6 @@ continue return CONTINUE;
 \/\/.* return COMMENT;
 [a-zA-Z]+[0-9a-zA-Z]*  return ID;
 0|([1-9]+[0-9]*)    return NUM;
-\"\\n\"    return FORBIDDEN_STR;
-\"\\r\"    return FORBIDDEN_STR;
 \"([^\\\"(\x00-\x08)(\x0B-\x0C)(\x0F-\x1F)(\n)]*{legal_escape}*)*\"    return STRING;
 \"[^"]+  return UNCLOSED_STRING;
 

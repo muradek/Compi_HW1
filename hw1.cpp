@@ -38,7 +38,6 @@ const char* getTokenType(int token_num)
 		case ID: return "ID";
     case NUM: return "NUM";
     case STRING: return "STRING";
-    case FORBIDDEN_STR: return "FORBIDDEN_STR";
     case UNCLOSED_STRING: return "UNCLOSED_STRING";
 	}
   return "Failed";
@@ -164,10 +163,6 @@ void printRequestedLine(int token_num)
 	{
 		case COMMENT: 
       std::cout << yylineno << " " << token_type << " //" << std::endl;
-      break;
-
-    case FORBIDDEN_STR:
-      std::cout << "wohooooo needs UPDATE! " << yytext << std::endl;
       break;
 
     case STRING:

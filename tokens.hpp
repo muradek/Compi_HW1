@@ -29,8 +29,7 @@
     ID = 26,
     NUM = 27,
     STRING = 28,
-    FORBIDDEN_STR = 29,
-    UNCLOSED_STRING = 30
+    UNCLOSED_STRING = 29
   };
   extern int yylineno;
   extern char* yytext;
